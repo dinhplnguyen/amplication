@@ -1,0 +1,42 @@
+datasource mongo {
+  provider = "mongodb"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  createdAt DateTime @default(now())
+  firstName String?
+  habit     Habit[]  @relation(fields: [habitIds], references: [id])
+  habitIds  String[] @mongo.ObjectId
+  id        String   @id @default(auto()) @map("_id") @mongo.ObjectId
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+model Habit {
+  createdAt DateTime        @default(now())
+  date      EnumHabitDate[]
+  id        String          @id @default(auto()) @map("_id") @mongo.ObjectId
+  name      String
+  note      String?
+  updatedAt DateTime        @updatedAt
+  users     User[]          @relation(fields: [usersIds], references: [id])
+  usersIds  String[]        @mongo.ObjectId
+}
+
+enum EnumHabitDate {
+  Sunday
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+}
